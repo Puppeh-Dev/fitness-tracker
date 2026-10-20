@@ -1,6 +1,6 @@
 // Offline support: serve the app shell from cache, refresh it in the background.
 // Bump VERSION when shipping changes so old caches are cleared.
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = `fitness-${VERSION}`;
 const SHELL = [
   './',
@@ -11,6 +11,7 @@ const SHELL = [
   'src/store.js',
   'src/health.js',
   'src/stats.js',
+  'src/presets.js',
   'icons/icon-192.png',
   'icons/apple-touch-icon.png',
 ];

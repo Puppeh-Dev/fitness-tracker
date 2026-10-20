@@ -161,7 +161,9 @@ ul.list li:last-child { border-bottom: 0; }
 .chart .grid { stroke: var(--line); }
 .chart text { fill: var(--muted); font-size: 10px; }
 
-.ex-row { display: grid; grid-template-columns: 1fr 52px 52px 64px 32px; gap: 6px; margin-bottom: 6px; }
+.ex-row { padding: 8px 0; border-bottom: 1px solid var(--line); }
+.ex-top { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+.ex-nums { display: grid; grid-template-columns: 1fr 1fr 1fr 1.4fr; gap: 6px; }
 .ex-row input { padding: 8px; }
 
 #toast {
@@ -180,3 +182,20 @@ ul.list li:last-child { border-bottom: 0; }
 ol.steps { padding-left: 20px; margin: 6px 0; }
 ol.steps li { margin-bottom: 6px; }
 code { font-size: 13px; background: var(--bg); padding: 1px 4px; border-radius: 4px; word-break: break-all; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.chip {
+  font: inherit;
+  font-size: 14px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+.chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+label.check { display: flex; align-items: center; gap: 10px; color: var(--text); font-size: 16px; margin: 8px 0; }
+label.check input { width: 20px; height: 20px; margin: 0; }
+
+details summary { color: var(--accent); cursor: pointer; }
