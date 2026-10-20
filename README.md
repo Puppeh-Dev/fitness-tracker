@@ -10,15 +10,19 @@ All data stays on your phone. There's no server and no account.
 
 - **Today**: this week's plan at a glance (green = done, red = missed),
   today's workout, and a quick weigh-in box.
-- **Plan**: build workouts (exercises with sets, reps and load) and assign
-  them to days of the week. There's a starter 3-day plan to edit if you want a
-  head start.
+- **Plan**: pick from about 20 ready-made workouts (**Find a workout**),
+  filtered by the equipment you own and whether you're training indoors or
+  outdoors, or build your own (sets, reps, rest and load). Then assign them to
+  days of the week.
+- **Indoor/outdoor swaps**: if today's planned workout is indoors and you'd
+  rather be outside (or the other way round), Today suggests a matching
+  workout for the same body area and lets you swap it for the day.
 - **Weight**: weigh-ins, a chart with a 7-day average, change over 30 days,
   and distance from your goal. The average matters more than any single day,
   since body weight swings 1–2 kg on water alone.
 - **Log**: record a workout (from your plan or anything else) with notes.
-- **More**: import from Apple Health, units (kg/lb), goal weight, backup and
-  restore.
+- **More**: your equipment and indoor/outdoor preference, import from Apple
+  Health, units (kg/lb), goal weight, backup and restore.
 
 ## Install on your iPhone
 

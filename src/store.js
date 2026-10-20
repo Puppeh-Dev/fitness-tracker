@@ -5,8 +5,10 @@ const KEY = 'fitness-tracker:v1';
 export function emptyState() {
   return {
     version: 1,
-    settings: { unit: 'kg', goalKg: null },
-    // Workout templates: { id, name, exercises: [{ name, sets, reps, load }] }
+    // equipment: ids from presets.js EQUIPMENT. setting: preferred 'any'|'indoor'|'outdoor'.
+    settings: { unit: 'kg', goalKg: null, equipment: [], setting: 'any' },
+    // Workout templates: { id, name, exercises: [{ name, sets, reps, rest?, load }],
+    //   presetId?, focus?, setting?, minutes? }
     templates: [],
     // Index 0 = Monday. Each entry is a template id or null for rest.
     plan: [null, null, null, null, null, null, null],
@@ -14,6 +16,8 @@ export function emptyState() {
     workouts: [],
     // { id, date, kg, source: 'manual'|'health' }
     weights: [],
+    // A one-day swap of the planned workout for a preset: { day: 'YYYY-MM-DD', presetId }.
+    todaySwap: null,
     lastBackupAt: null,
   };
 }
