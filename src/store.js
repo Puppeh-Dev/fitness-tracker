@@ -6,7 +6,8 @@ export function emptyState() {
   return {
     version: 1,
     // equipment: ids from presets.js EQUIPMENT. setting: preferred 'any'|'indoor'|'outdoor'.
-    settings: { unit: 'kg', goalKg: null, equipment: [], setting: 'any' },
+    // goal: a presets.js GOALS id or 'any'.
+    settings: { unit: 'kg', goalKg: null, equipment: [], setting: 'any', goal: 'any' },
     // Workout templates: { id, name, exercises: [{ name, sets, reps, rest?, load }],
     //   presetId?, focus?, setting?, minutes? }
     templates: [],

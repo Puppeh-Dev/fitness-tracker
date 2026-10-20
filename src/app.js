@@ -1,8 +1,9 @@
 import { load, save, normalise, uid, mergeHealth } from './store.js';
 import { parseHealthText } from './health.js';
 import {
-  EQUIPMENT, FOCUS, availablePresets, alternatives, presetById, toTemplate, labelFor,
+  EQUIPMENT, FOCUS, GOALS, availablePresets, alternatives, presetById, toTemplate, labelFor,
 } from './presets.js';
+import { GUIDE } from './exercise-guide.js';
 import {
   dayKey, dailyWeights, withTrend, trendChange, weekdayIndex, startOfWeek,
   weekAdherence, kgToDisplay, displayToKg,
@@ -136,7 +137,7 @@ function renderToday() {
 function exerciseList(exercises) {
   if (!exercises?.length) return '<p class="muted small">No exercises listed.</p>';
   return `<ul class="list">${exercises.map((e) => `
-    <li class="spread"><span>${esc(e.name)}</span><span class="muted small" style="text-align:right">${[
+    <li class="spread"><button class="ex-name" data-action="guide" data-name="${esc(e.name)}">${esc(e.name)}${GUIDE[e.name.toLowerCase()]?.images.length ? ' <span class="cam" aria-label="has pictures">▶</span>' : ''}</button><span class="muted small" style="text-align:right">${[
       e.sets && e.reps ? (e.sets === '1' ? esc(e.reps) : `${esc(e.sets)}×${esc(e.reps)}`) : e.sets ? `${esc(e.sets)} sets` : '',
       e.load ? esc(e.load) : '',
       Number(e.rest) > 0 ? `rest ${e.rest}s` : '',
@@ -228,14 +229,15 @@ function readTemplateForm() {
 }
 
 function renderPresets() {
-  const f = ui.filter ||= { setting: state.settings.setting, focus: 'any' };
+  const f = ui.filter ||= { setting: state.settings.setting, focus: 'any', goal: state.settings.goal };
   const owned = state.settings.equipment;
-  const list = availablePresets({ equipment: owned, setting: f.setting, focus: f.focus });
+  const list = availablePresets({ equipment: owned, setting: f.setting, focus: f.focus, goal: f.goal });
   const added = new Set(state.templates.map((t) => t.presetId).filter(Boolean));
   const chip = (group, value, label) => `<button type="button" class="chip ${f[group] === value ? 'on' : ''}" data-action="filter" data-group="${group}" data-value="${value}">${label}</button>`;
   return `
     <div class="card">
       <div class="spread"><h2>Find a workout</h2><button class="link shrink" data-action="browse-close">Done</button></div>
+      <div class="chips">${chip('goal', 'any', 'Any goal')}${GOALS.map((x) => chip('goal', x.id, x.label)).join('')}</div>
       <div class="chips">${chip('setting', 'any', 'Anywhere')}${chip('setting', 'indoor', 'Indoor')}${chip('setting', 'outdoor', 'Outdoor')}</div>
       <div class="chips">${chip('focus', 'any', 'All')}${FOCUS.map((x) => chip('focus', x.id, x.label)).join('')}</div>
       <p class="small muted">Using your equipment: ${owned.length ? owned.map((id) => esc(labelFor(EQUIPMENT, id))).join(', ') : 'bodyweight only'}. <button class="link" data-action="go" data-tab="more">Change</button></p>
@@ -244,6 +246,7 @@ function renderPresets() {
       <div class="card">
         <div class="spread"><h2 style="margin:0">${esc(p.name)}</h2><span class="shrink">${settingPill(p.setting)}</span></div>
         <p class="muted small" style="margin:4px 0 0">${p.minutes} min · ${labelFor(FOCUS, p.focus)}${p.needs.length ? ` · ${p.needs.map((n) => labelFor(EQUIPMENT, n)).join(', ')}` : ' · no equipment'}</p>
+        <p class="small" style="margin:4px 0 0">Good for: ${p.goals.map((g) => labelFor(GOALS, g)).join(', ')}</p>
         <details style="margin-top:6px"><summary class="small">Exercises</summary>${exerciseList(p.exercises)}</details>
         ${added.has(p.id)
           ? '<p class="good small" style="margin:10px 0 0">✓ In your workouts</p>'
@@ -369,14 +372,20 @@ function renderMore() {
       </details>
     </div>
     <form data-form="equipment" class="card">
-      <h2>My equipment</h2>
+      <h2>My training</h2>
+      <label>Main goal</label>
+      <select name="goal">
+        <option value="any" ${state.settings.goal === 'any' ? 'selected' : ''}>No particular goal</option>
+        ${GOALS.map((g) => `<option value="${g.id}" ${state.settings.goal === g.id ? 'selected' : ''}>${esc(g.label)}</option>`).join('')}
+      </select>
+      <label>Equipment</label>
       <p class="small muted">Workout suggestions only use what you tick. Bodyweight workouts are always included.</p>
       ${EQUIPMENT.map((e) => `<label class="check"><input type="checkbox" name="eq" value="${e.id}" ${state.settings.equipment.includes(e.id) ? 'checked' : ''}> ${esc(e.label)}</label>`).join('')}
       <label>I usually prefer to train</label>
       <select name="setting">
         ${[['any', 'Indoors or outdoors'], ['indoor', 'Indoors'], ['outdoor', 'Outdoors']].map(([v, l]) => `<option value="${v}" ${state.settings.setting === v ? 'selected' : ''}>${l}</option>`).join('')}
       </select>
-      <button class="btn">Save equipment</button>
+      <button class="btn">Save</button>
     </form>
     <div class="card">
       <h2>Settings</h2>
@@ -473,6 +482,40 @@ async function restore(input) {
   }
 }
 
+// ---------- Exercise guide ----------
+
+const sheet = document.getElementById('sheet');
+
+function openGuide(name) {
+  const g = GUIDE[name.toLowerCase()];
+  const video = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${name} exercise proper form`)}`;
+  sheet.innerHTML = `
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-label="${esc(name)}">
+      <div class="spread"><h2>${esc(name)}</h2><button class="icon" data-action="guide-close" aria-label="Close">✕</button></div>
+      ${g?.images.length ? `
+        <div class="frames${g.images.length > 1 ? ' animate' : ''}">
+          ${g.images.map((src, i) => `<img src="${src}" alt="${esc(name)}, ${i === 0 ? 'start' : 'end'} position" loading="lazy">`).join('')}
+        </div>
+        ${g.images.length > 1 ? '<p class="muted small" style="margin:4px 0 0">Start and end positions</p>' : ''}` : ''}
+      ${g ? `<ol class="steps">${g.steps.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>` : '<p class="muted">No written guide for this one yet.</p>'}
+      <a class="btn secondary" href="${video}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">Watch videos on YouTube</a>
+      ${g?.images.length ? '<p class="muted small" style="text-align:center">Pictures: Free Exercise DB, public domain</p>' : ''}
+    </div>`;
+  sheet.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGuide() {
+  sheet.hidden = true;
+  sheet.innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+sheet.addEventListener('click', (e) => {
+  // Tapping the dimmed backdrop or the close button dismisses it.
+  if (e.target === sheet || e.target.closest('[data-action="guide-close"]')) closeGuide();
+});
+
 // ---------- Events ----------
 
 document.querySelector('.tabs').addEventListener('click', (e) => {
@@ -501,6 +544,8 @@ view.addEventListener('click', async (e) => {
       go('log');
       ui.loggingFrom = { templateId: el.dataset.template || null, presetId: el.dataset.preset || null };
       return render();
+    case 'guide':
+      return openGuide(el.dataset.name);
     case 'swap':
       state.todaySwap = { day: todayInput(), presetId: el.dataset.preset };
       return commit();
@@ -648,8 +693,9 @@ view.addEventListener('submit', (e) => {
     case 'equipment': {
       state.settings.equipment = [...form.querySelectorAll('input[name="eq"]:checked')].map((x) => x.value);
       state.settings.setting = f.setting.value;
+      state.settings.goal = f.goal.value;
       commit();
-      return toast('Equipment saved.');
+      return toast('Training preferences saved.');
     }
     case 'settings': {
       const newUnit = f.unit.value;

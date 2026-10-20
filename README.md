@@ -14,6 +14,13 @@ All data stays on your phone. There's no server and no account.
   filtered by the equipment you own and whether you're training indoors or
   outdoors, or build your own (sets, reps, rest and load). Then assign them to
   days of the week.
+- **Goals**: set your main goal (get stronger, build muscle, lose fat,
+  improve fitness, mobility) under **More → My training** and Find a workout
+  shows the workouts that suit it first.
+- **Exercise guide**: tap any exercise name to see start and end pictures,
+  step-by-step instructions, and a link to YouTube videos of it. Pictures come
+  from [Free Exercise DB](https://github.com/yuhonas/free-exercise-db), which
+  is public domain, and are bundled with the app.
 - **Indoor/outdoor swaps**: if today's planned workout is indoors and you'd
   rather be outside (or the other way round), Today suggests a matching
   workout for the same body area and lets you swap it for the day.
@@ -21,7 +28,7 @@ All data stays on your phone. There's no server and no account.
   and distance from your goal. The average matters more than any single day,
   since body weight swings 1–2 kg on water alone.
 - **Log**: record a workout (from your plan or anything else) with notes.
-- **More**: your equipment and indoor/outdoor preference, import from Apple
+- **More**: your goal, equipment and indoor/outdoor preference, import from Apple
   Health, units (kg/lb), goal weight, backup and restore.
 
 ## Install on your iPhone

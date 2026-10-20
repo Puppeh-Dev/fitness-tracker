@@ -49,3 +49,12 @@ test('alternatives offer the same focus in the other setting, dedicated ones fir
 test('alternatives need a focus to match on', () => {
   assert.deepEqual(alternatives({ name: 'My own thing', exercises: [] }, 'outdoor', []), []);
 });
+
+test('every preset has known goals and the goal filter respects them', async () => {
+  const { GOALS } = await import('../src/presets.js');
+  const ids = new Set(GOALS.map((g) => g.id));
+  for (const p of PRESETS) assert.ok(p.goals.length && p.goals.every((g) => ids.has(g)), p.id);
+  const strength = availablePresets({ equipment: ['gym'], goal: 'strength' });
+  assert.ok(strength.length > 0);
+  assert.ok(strength.every((p) => p.goals.includes('strength')));
+});
